@@ -1,0 +1,136 @@
+## I used the following code to answer questions regarding a data set on SQLiteStudio
+
+## Q1 Show Customers (their full names, customer ID, and country) who are not in the US. 
+
+Select FirstName ||' '|| LastName AS Full_Name, CustomerID, Country
+From chinook.customers
+Where Country <> 'USA'
+And Country <> '';
+
+## Q2 Show only the Customers from Brazil.
+
+Select FirstName ||' '|| LastName AS Full_Name
+From chinook.customers
+Where Country = 'Brazil'
+And Country <> '';
+
+## Q3 Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+
+Select c.FirstName ||' '|| c.LastName AS Full_Name, i.InvoiceId, i.InvoiceDate, i.BillingCountry
+From chinook.customers c
+Join chinook.invoices i ON c.CustomerId = i.CustomerId
+Where c.Country = 'Brazil';
+
+## Q4 Show the Employees who are Sales Agents.
+
+Select FirstName ||' '|| LastName As Full_name, Title
+From chinook.employees
+Where Title like 'Sales%Agent';
+
+## Q5 Find a unique/distinct list of billing countries from the Invoice table.
+
+Select DISTINCT BillingCountry
+From chinook.invoices;
+
+## Q6 Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+
+Select e.FirstName ||' '|| e.LastName as Sales_Agent_Name, i.*
+From chinook.employees e
+Join chinook.customers c on e.EmployeeId = c.SupportRepId
+Join chinook.invoices i on c.CustomerId = i.CustomerId
+Where  e.Title = 'Sales Support Agent'
+And Billingstate <> ''
+And BillingPostalCode <> ''
+Order by  e.LastName, e.FirstName, i.InvoiceId
+
+## Q7 Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+
+Select i.Total AS Invoice_Total, 
+c.FirstName ||' '|| c.LastName as Customer_Name,
+c.Country AS Customer_Country,
+e.FirstName ||' '|| e.LastName as Sales_Agent_Name
+From chinook.invoices i
+Join chinook.customers c on i.CustomerId = c.CustomerId
+Join chinook.employees e on c.SupportRepId = e.EmployeeId
+Order by i.Total desc;
+
+## Q8 How many Invoices were there in 2009?
+
+Select COUNT(*) as Total_Invoices
+From chinook.invoices
+Where strftime('%Y', InvoiceDate) = '2009';
+
+## Q9 What are the total sales for 2009?
+
+Select Round(SUM(Total),2) as Total_Sales
+From chinook.invoices
+Where strftime('%Y', InvoiceDate) = '2009';
+
+## Q10 Write a query that includes the purchased track name with each invoice line ID.
+
+Select il.InvoiceLineId, t.Name 
+From chinook.invoice_items il
+Join chinook.tracks t on il.TrackId = t.TrackId;
+
+## Q11 Write a query that includes the purchased track name AND artist name with each invoice line ID.
+
+Select il.InvoiceLineId, t.Name as Track_Name, ar.Name as Artist
+From chinook.invoice_items il
+Join chinook.tracks t ON il.TrackId = t.TrackId
+Join chinook.albums al ON t.AlbumId = al.AlbumId
+Join chinook.artists ar ON al.ArtistId = ar.ArtistId;
+
+## Q12 Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+
+Select t.Name as Song_Name, al.Title as Album_Name, mt.Name as Media_Type, g.Name as Genre
+From chinook.tracks t
+Join chinook.albums al on t.AlbumId = al.AlbumId
+Join chinook.media_types mt on t.MediaTypeId = mt.MediaTypeId
+Join chinook.genres g on t.GenreId = g.GenreId
+Order By Song_Name asc;
+
+## Q13 Show the total sales made by each sales agent.
+
+Select e.FirstName || ' ' || e.LastName as Sales_Agent_Name, Round(SUM(i.Total),0) as Total_Sales
+From chinook.employees e
+Join chinook.customers c on e.EmployeeId = c.SupportRepId
+Join chinook.invoices i on c.CustomerId = i.CustomerId
+Where e.Title like 'Sales%Agent'
+Group by e.FirstName, e.LastName;
+
+## Q14 Which sales agent made the most dollars in sales in 2009?
+
+Select e.FirstName ||' '|| e.LastName as Sales_Agent_Name,
+Round(SUM(i.Total),0) as Total_Sales
+From chinook.employees e
+Join chinook.customers c on e.EmployeeId = c.SupportRepId
+Join chinook.invoices i on c.CustomerId = i.CustomerId
+Where e.Title like 'Sales%Agent'
+and strftime('%Y', i.InvoiceDate) = '2009'
+Group by e.FirstName, e.LastName
+Order by Total_Sales desc limit 1;
+
+## Q15 Which agent sold the most tracks to AC/DC  
+
+Select e.FirstName ||' '|| e.LastName as Sales_Agent, COUNT(*) as Total_Tracks_Sold
+From chinook.employees e
+Join chinook.customers c on e.EmployeeId = c.SupportRepId
+Join chinook.invoices i on c.CustomerId = i.CustomerId
+Join chinook.invoice_items ii on i.InvoiceId = ii.InvoiceId
+Join chinook.tracks t on ii.TrackId = t.TrackId
+Join chinook.albums al on t.AlbumId = al.AlbumId
+Join chinook.artists ar on al.ArtistId = ar.ArtistId
+Where ar.Name = 'AC/DC'
+Group by e.FirstName, e.LastName
+Order by Total_Tracks_Sold desc limit 1;
+
+## Q16 Which artist had the most sales 
+
+Select ar.Name as Artist_Name, Round(SUM(i.Total),0) as Total_Sales
+From chinook.artists ar
+Join chinook.albums al on ar.ArtistId = al.ArtistId
+Join chinook.tracks t on al.AlbumId = t.AlbumId
+Join chinook.invoice_items ii on t.TrackId = ii.TrackId
+Join chinook.invoices i on ii.InvoiceId = i.InvoiceId
+Group by ar.Name
+Order by Total_Sales desc limit 1;
