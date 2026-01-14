@@ -44,7 +44,7 @@ Join chinook.invoices i on c.CustomerId = i.CustomerId
 Where e.Title like 'Sales%Agent'
 And Billingstate <> ''
 And BillingPostalCode <> ''
-Order by  e.LastName, e.FirstName, i.InvoiceId
+Order by  e.LastName, e.FirstName, i.InvoiceId;
 
 ## Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
 
@@ -133,10 +133,28 @@ Select
   ar.Name AS Artist_Name,
   Round(Sum(ii.UnitPrice * ii.Quantity), 2) as Total_Sales
 From chinook.invoice_items ii
-Join chinook.tracks t  ON ii.TrackId = t.TrackId
-Join chinook.albums al ON t.AlbumId = al.AlbumId
-Join chinook.artists ar ON al.ArtistId = ar.ArtistId
+Join chinook.tracks t  on ii.TrackId = t.TrackId
+Join chinook.albums al on t.AlbumId = al.AlbumId
+Join chinook.artists ar on al.ArtistId = ar.ArtistId;
 Group by ar.Name
 Order by Total_Sales DESC
 Limit 1;
 
+
+## Reporting Outputs (Monthly revenue trend) 
+
+Creare view vw_monthly_revenue as
+Select 
+  strftime('%Y-%m', InvoiceDate) as Month,
+  ROUND(SUM(Total), 2) as Revenue
+From chinook.invoices
+Group by 1;
+
+## Reporting Outputs (Revenue by country)
+
+Create view vw_revenue_by_country as
+Select 
+  BillingCountry,
+  Round(SUM(Total), 2) as Revenue
+From chinook.invoices
+Group by 1;
