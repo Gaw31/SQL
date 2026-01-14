@@ -40,13 +40,12 @@ SQL reporting analysis using the Chinook database.
 
 ---
 
-### 2) Superstore SQL
-Business-focused reporting and insights project.
-- Sales performance analysis
-- Product/category trends
-- KPI reporting queries
+### 2) Customer and Order Analytics
+Customer behavior & order performance reporting.
+- Customer segmentation queries
+- Order trends and KPIs
 
-📂 Folder: `Superstore SQL`
+📂 Folder: `Customer and Order Analytics`
 
 ---
 
@@ -58,14 +57,6 @@ Data cleaning and preparation project.
 
 📂 Folder: `World_layoffs Projects (Data Cleaning)`
 
----
-
-### 4) Customer and Order Analytics
-Customer behavior & order performance reporting.
-- Customer segmentation queries
-- Order trends and KPIs
-
-📂 Folder: `Customer and Order Analytics`
 
 ---
 
