@@ -41,7 +41,7 @@ Select e.FirstName ||' '|| e.LastName as Sales_Agent_Name, i.*
 From chinook.employees e
 Join chinook.customers c on e.EmployeeId = c.SupportRepId
 Join chinook.invoices i on c.CustomerId = i.CustomerId
-Where  e.Title = 'Sales Support Agent'
+Where e.Title like 'Sales%Agent'
 And Billingstate <> ''
 And BillingPostalCode <> ''
 Order by  e.LastName, e.FirstName, i.InvoiceId
@@ -129,11 +129,14 @@ Order by Total_Tracks_Sold desc limit 1;
 
 ## Which artist had the most sales 
 
-Select ar.Name as Artist_Name, Round(SUM(i.Total),0) as Total_Sales
-From chinook.artists ar
-Join chinook.albums al on ar.ArtistId = al.ArtistId
-Join chinook.tracks t on al.AlbumId = t.AlbumId
-Join chinook.invoice_items ii on t.TrackId = ii.TrackId
-Join chinook.invoices i on ii.InvoiceId = i.InvoiceId
+Select 
+  ar.Name AS Artist_Name,
+  Round(Sum(ii.UnitPrice * ii.Quantity), 2) as Total_Sales
+From chinook.invoice_items ii
+Join chinook.tracks t  ON ii.TrackId = t.TrackId
+Join chinook.albums al ON t.AlbumId = al.AlbumId
+Join chinook.artists ar ON al.ArtistId = ar.ArtistId
 Group by ar.Name
-Order by Total_Sales desc limit 1;
+Order by Total_Sales DESC
+Limit 1;
+
